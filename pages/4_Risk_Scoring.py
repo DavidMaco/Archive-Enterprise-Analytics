@@ -66,9 +66,13 @@ with safe_page_section("Model metrics"):
                 f"AUC {float(cv_mean):.3f} ± {float(cv_std):.3f}"
             )
 
-        # Feature importance
-        features = pd.DataFrame(tp.get("top_features", []))
-        if not features.empty:
+        # Feature importance — normalise both list-of-lists and list-of-dicts formats
+        raw_features = tp.get("top_features", [])
+        if raw_features and isinstance(raw_features[0], (list, tuple)):
+            features = pd.DataFrame(raw_features, columns=["feature", "importance"])
+        else:
+            features = pd.DataFrame(raw_features)
+        if not features.empty and "feature" in features.columns and "importance" in features.columns:
             fig_features = px.bar(
                 features.head(15).sort_values("importance"),
                 x="importance",

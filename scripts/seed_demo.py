@@ -419,11 +419,11 @@ n_train = int(n_total * 0.80)
 n_test = n_total - n_train
 
 TOP_FEATURES = [
-    ["customer_prior_will_generate_complaint_rate", 0.48],
-    ["order_line_count", 0.22],
-    ["customer_prior_orders_log", 0.15],
-    ["plant_prior_delay_rate", 0.09],
-    ["product_nunique", 0.06],
+    {"feature": "customer_prior_will_generate_complaint_rate", "importance": 0.48},
+    {"feature": "order_line_count", "importance": 0.22},
+    {"feature": "customer_prior_orders_log", "importance": 0.15},
+    {"feature": "plant_prior_delay_rate", "importance": 0.09},
+    {"feature": "product_nunique", "importance": 0.06},
 ]
 
 def _target_metrics(
