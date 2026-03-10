@@ -1,0 +1,28 @@
+{
+  "name": "archive-enterprise-analytics",
+  "modules": [
+    "data_cleaning",
+    "analytics_marts",
+    "risk_modeling",
+    "retrieval_assistant",
+    "streamlit_dashboard"
+  ],
+  "core_tables": [
+    "fact_email",
+    "fact_document",
+    "fact_order",
+    "dim_customer",
+    "fact_event_timeline",
+    "fact_customer_daily",
+    "fact_order_risk_features",
+    "retrieval_corpus"
+  ],
+  "pages": [
+    "Executive Overview",
+    "Customer 360",
+    "Order Timeline",
+    "Risk Scoring",
+    "Assistant",
+    "Data Quality"
+  ]
+}
