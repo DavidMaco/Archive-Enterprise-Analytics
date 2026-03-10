@@ -13,9 +13,9 @@ from archive_analytics.dashboard import (
     get_json_asset,
     get_model_metrics_cached,
     model_artifacts_ready,
-    processed_assets_ready,
     safe_page_section,
 )
+from archive_analytics.data import processed_assets_ready
 from archive_analytics.settings import configure_logging, get_config
 
 configure_logging()
