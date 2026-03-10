@@ -28,7 +28,9 @@ with safe_page_section("Model metrics"):
 
     # Show key governance info
     governance_cols = st.columns(3)
-    governance_cols[0].metric("Run ID", metrics.get("run_id", "—"))
+    with governance_cols[0]:
+        st.caption("Run ID")
+        st.code(metrics.get("run_id", "—"), language=None)
     governance_cols[1].metric("Train rows", f"{metrics.get('train_rows', 0):,}")
     governance_cols[2].metric(
         "Targets trained",
