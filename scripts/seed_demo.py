@@ -401,9 +401,15 @@ scores_df = pd.DataFrame({
     "will_generate_complaint_score": complaint_signal.values.round(4),
     "will_be_delayed_score": delay_signal.values.round(4),
     "will_generate_credit_memo_score": credit_signal.values.round(4),
-    "will_generate_complaint_prediction": (complaint_signal > THRESHOLDS["will_generate_complaint"]).astype(int).values,
-    "will_be_delayed_prediction": (delay_signal > THRESHOLDS["will_be_delayed"]).astype(int).values,
-    "will_generate_credit_memo_prediction": (credit_signal > THRESHOLDS["will_generate_credit_memo"]).astype(int).values,
+    "will_generate_complaint_prediction": (
+        (complaint_signal > THRESHOLDS["will_generate_complaint"]).astype(int).values
+    ),
+    "will_be_delayed_prediction": (
+        (delay_signal > THRESHOLDS["will_be_delayed"]).astype(int).values
+    ),
+    "will_generate_credit_memo_prediction": (
+        (credit_signal > THRESHOLDS["will_generate_credit_memo"]).astype(int).values
+    ),
 })
 
 scores_df.to_parquet(MODELS_DIR / "order_risk_scores.parquet", index=False)
