@@ -1,6 +1,6 @@
 # Archive Enterprise Analytics
 
-> End-to-end analytics platform: Customer 360, calibrated ML risk scoring, and an evidence-based retrieval assistant — all surfaced in a six-page Streamlit dashboard with a companion Power BI data model.
+> End-to-end analytics platform: Customer 360, calibrated ML risk scoring, and an evidence-based retrieval assistant surfaced in a six-page Streamlit dashboard with a companion Power BI data model.
 
 ![CI](https://github.com/DavidMaco/Archive-Enterprise-Analytics/actions/workflows/ci.yml/badge.svg?branch=main)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue?logo=python)
@@ -13,7 +13,7 @@
 
 Order operations generate a continuous stream of emails, documents, and events that are never unified. The result is delayed complaints surfacing too late, credit memos that could have been prevented, and reactive customer service driven by gut feel rather than data.
 
-This platform unifies the archive dataset — raw parquet and SQLite — into a clean star schema, trains calibrated risk models to predict delays, complaints, and credit memos **before** they occur, and surfaces everything in an interactive dashboard that analysts can query in plain English.
+This platform unifies the archive dataset (raw parquet and SQLite) into a clean star schema, trains calibrated risk models to predict delays, complaints, and credit memos **before** they occur, and surfaces everything in an interactive dashboard that analysts can query in plain English.
 
 ---
 
@@ -23,7 +23,7 @@ This platform unifies the archive dataset — raw parquet and SQLite — into a 
 |------------|-------------|
 | **Data Pipeline** | Parquet + SQLite → vectorised fact / dimension star schema in one `build` command |
 | **Risk Scoring** | Calibrated HGBC + Logistic Regression for delay, complaint, and credit-memo risk |
-| **Retrieval Assistant** | TF-IDF with MMR diversity re-ranking and entity-level dedup — evidence, not hallucination |
+| **Retrieval Assistant** | TF-IDF with MMR diversity re-ranking and entity-level dedup: evidence, not hallucination |
 | **Customer 360** | Per-customer issue rates, event timelines, and behavioral aggregates |
 | **Quality Audit** | Automated data-quality report comparing raw vs. processed record completeness |
 | **Power BI Model** | Ready-to-connect Parquet tables with DAX measures and theme (see `powerbi/`) |
@@ -65,7 +65,7 @@ flowchart LR
 Three binary classifiers are trained per order using backward-looking features only (no leakage):
 
 $$
-\hat{y} \in \{\text{delay},\ \text{complaint},\ \text{credit\_memo}\}
+\hat{y} \in \{\text{delay},\ \text{complaint},\ \text{credit memo}\}
 $$
 
 Each uses a **Histogram Gradient Boosting Classifier** calibrated with `CalibratedClassifierCV` (isotonic regression, 5-fold). A threshold $\tau$ is chosen to maximise $F_1$ on the hold-out set:
@@ -77,7 +77,7 @@ $$
 Key predictive features:
 
 $$
-\mathbf{x} = \bigl[\text{order\_line\_count},\ \log(\text{prior\_orders}),\ \text{prior\_delay\_rate},\ \text{prior\_complaint\_rate},\ \text{plant},\ \ldots\bigr]
+\mathbf{x} = \bigl[\text{order line count},\ \log(\text{prior orders}),\ \text{prior delay rate},\ \text{prior complaint rate},\ \text{plant},\ \ldots\bigr]
 $$
 
 Calibration ensures the output $\hat{p} \in [0, 1]$ can be interpreted as a true probability, enabling threshold-based alerting and risk banding.
@@ -210,7 +210,7 @@ archive-enterprise-analytics/
 │   ├── __main__.py                 # CLI  (build / train / serve)
 │   ├── constants.py                # Single source of truth for magic strings/numbers
 │   ├── settings.py                 # Immutable AppConfig, env-based configuration
-│   ├── ingestion.py                # Raw I/O — parquet + SQLite
+│   ├── ingestion.py                # Raw I/O: parquet + SQLite
 │   ├── transforms.py               # Vectorised fact / dimension table builders
 │   ├── quality.py                  # Data-quality audit report
 │   ├── data.py                     # Build + load façade; readiness checks
@@ -274,9 +274,9 @@ The dashboard is **read-only by default**. It never triggers a build or model tr
 
 ## Design Notes
 
-- **No `sys.path` hacks** — all imports use the installed package namespace.
-- **Vectorised transforms** — `DataFrame.apply(axis=1)` replaced with `str.extract`, `np.select`, and vectorised SHA-1 hashing.
-- **Error boundaries** — every page section is wrapped in `safe_page_section()` so one failing chart never crashes the page.
-- **Calibrated probabilities** — `CalibratedClassifierCV` ensures $\hat{p}$ values are reliable for threshold-based alerting.
-- **Honest retrieval** — the assistant returns ranked evidence with citations, not a generative summary.
-- **Immutable config** — `AppConfig` is a frozen dataclass; output directories are created lazily.
+- **No `sys.path` hacks**: all imports use the installed package namespace.
+- **Vectorised transforms**: `DataFrame.apply(axis=1)` replaced with `str.extract`, `np.select`, and vectorised SHA-1 hashing.
+- **Error boundaries**: every page section is wrapped in `safe_page_section()` so one failing chart never crashes the page.
+- **Calibrated probabilities**: `CalibratedClassifierCV` ensures $\hat{p}$ values are reliable for threshold-based alerting.
+- **Honest retrieval**: the assistant returns ranked evidence with citations, not a generative summary.
+- **Immutable config**: `AppConfig` is a frozen dataclass; output directories are created lazily.
