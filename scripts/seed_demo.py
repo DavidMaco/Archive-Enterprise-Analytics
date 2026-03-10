@@ -177,7 +177,9 @@ print(f"  ERP transactions: {len(erp_df):,} rows spanning {N_ORDERS} orders")
 
 # Collect unique order IDs for later use
 all_order_ids = sorted(erp_df["SALESDOCUMENT"].unique())
-order_to_customer = dict(zip(erp_df["SALESDOCUMENT"], erp_df["SOLDTOPARTY"]))
+order_to_customer = dict(
+    zip(erp_df["SALESDOCUMENT"], erp_df["SOLDTOPARTY"], strict=True)
+)
 
 
 # ── 2. Communications (emails) ───────────────────────────────────────────────

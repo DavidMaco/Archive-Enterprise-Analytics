@@ -45,6 +45,8 @@ flowchart LR
     E --> H
 ```
 
+Plain-English project guide: see `docs/PLAIN_ENGLISH_GUIDE.md`.
+
 ---
 
 ## Dashboard Pages
