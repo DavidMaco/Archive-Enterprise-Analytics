@@ -96,24 +96,22 @@ with safe_page_section("Order event timeline"):
 # ------------------------------------------------------------------
 
 left, right = st.columns(2)
-with left:
-    with safe_page_section("Linked documents"):
-        doc_cols = [c for c in (
-            "document_type", "source_document_id", "event_timestamp",
-            "document_amount", "revenue_amount", "cost_amount", "refund_amount",
-            "delivery_lag_days", "content_summary",
-        ) if c in order_docs.columns]
-        st.dataframe(
-            order_docs[doc_cols].sort_values("event_timestamp") if not order_docs.empty else pd.DataFrame(),
-            use_container_width=True,
-        )
-with right:
-    with safe_page_section("Linked emails"):
-        email_cols = [c for c in (
-            "timestamp", "from_email", "to_email", "subject",
-            "message_scope", "is_complaint_like", "body_preview",
-        ) if c in order_emails.columns]
-        st.dataframe(
-            order_emails[email_cols].sort_values("timestamp") if not order_emails.empty else pd.DataFrame(),
-            use_container_width=True,
-        )
+with left, safe_page_section("Linked documents"):
+    doc_cols = [c for c in (
+        "document_type", "source_document_id", "event_timestamp",
+        "document_amount", "revenue_amount", "cost_amount", "refund_amount",
+        "delivery_lag_days", "content_summary",
+    ) if c in order_docs.columns]
+    st.dataframe(
+        order_docs[doc_cols].sort_values("event_timestamp") if not order_docs.empty else pd.DataFrame(),
+        use_container_width=True,
+    )
+with right, safe_page_section("Linked emails"):
+    email_cols = [c for c in (
+        "timestamp", "from_email", "to_email", "subject",
+        "message_scope", "is_complaint_like", "body_preview",
+    ) if c in order_emails.columns]
+    st.dataframe(
+        order_emails[email_cols].sort_values("timestamp") if not order_emails.empty else pd.DataFrame(),
+        use_container_width=True,
+    )

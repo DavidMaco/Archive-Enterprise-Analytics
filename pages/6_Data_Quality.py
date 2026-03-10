@@ -40,12 +40,18 @@ with safe_page_section("Duplicate detection"):
     col1, col2 = st.columns(2)
     with col1:
         st.metric("Duplicate email source IDs", f"{quality.get('email_duplicate_source_ids', 0):,}")
-        dup_email_cols = [c for c in ("source_message_id", "timestamp", "from_email", "to_email", "subject") if c in email_dups.columns]
+        dup_email_cols = [
+            c for c in ("source_message_id", "timestamp", "from_email", "to_email", "subject")
+            if c in email_dups.columns
+        ]
         if not email_dups.empty:
             st.dataframe(email_dups[dup_email_cols], use_container_width=True)
     with col2:
         st.metric("Duplicate document source IDs", f"{quality.get('document_duplicate_source_ids', 0):,}")
-        dup_doc_cols = [c for c in ("source_document_id", "document_type", "order_id", "customer_id_clean") if c in doc_dups.columns]
+        dup_doc_cols = [
+            c for c in ("source_document_id", "document_type", "order_id", "customer_id_clean")
+            if c in doc_dups.columns
+        ]
         if not doc_dups.empty:
             st.dataframe(doc_dups[dup_doc_cols], use_container_width=True)
 

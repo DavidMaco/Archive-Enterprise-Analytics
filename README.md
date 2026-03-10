@@ -62,7 +62,7 @@ python -m archive_analytics build
 python -m archive_analytics train
 
 # 4. Launch the dashboard
-python -m archive_analytics app
+python -m archive_analytics serve
 # …or: streamlit run app.py
 ```
 

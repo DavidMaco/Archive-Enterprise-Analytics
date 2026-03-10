@@ -1,28 +1,27 @@
 .PHONY: install dev build train app test lint clean
 
+PYTHON ?= python
+
 install:
-	pip install -e .
+	$(PYTHON) -m pip install -e .
 
 dev:
-	pip install -e ".[dev]"
+	$(PYTHON) -m pip install -e ".[dev]"
 
 build:
-	python -m archive_analytics build
+	$(PYTHON) -m archive_analytics build
 
 train:
-	python -m archive_analytics train
+	$(PYTHON) -m archive_analytics train
 
 app:
-	streamlit run app.py
+	$(PYTHON) -m archive_analytics serve
 
 test:
-	pytest tests/ -v
+	$(PYTHON) -m pytest tests/ -v
 
 lint:
-	python -m py_compile src/archive_analytics/data.py
-	python -m py_compile src/archive_analytics/modeling.py
-	python -m py_compile src/archive_analytics/retrieval.py
+	$(PYTHON) -m ruff check .
 
 clean:
-	rm -rf data/processed data/models reports __pycache__ .pytest_cache
-	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	$(PYTHON) -c "from pathlib import Path; import shutil; [shutil.rmtree(Path(p), ignore_errors=True) for p in ('data/processed', 'data/models', 'reports', '__pycache__', '.pytest_cache', '.ruff_cache')]; [shutil.rmtree(path, ignore_errors=True) for path in Path('.').rglob('__pycache__')]"
