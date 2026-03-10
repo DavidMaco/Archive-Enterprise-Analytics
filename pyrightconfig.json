@@ -1,0 +1,11 @@
+{
+  "include": [
+    "app.py",
+    "pages",
+    "scripts",
+    "src"
+  ],
+  "extraPaths": [
+    "src"
+  ]
+}
