@@ -1,5 +1,5 @@
 # Streamlit Cloud deployment dependencies.
-# Streamlit Cloud installs: `pip install -r requirements.txt` then `pip install .` (from pyproject.toml).
+# uv installs this file; -e . installs the local archive_analytics package from pyproject.toml.
 # Local pinned install: `pip install -c constraints.txt -r requirements.txt`
 
 pandas==2.3.3
@@ -10,3 +10,6 @@ streamlit==1.54.0
 plotly==6.5.2
 scikit-learn==1.8.0
 joblib==1.5.3
+
+# Install the archive_analytics package itself (src layout, from pyproject.toml)
+-e .
