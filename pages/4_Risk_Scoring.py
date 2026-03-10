@@ -52,10 +52,16 @@ with safe_page_section("Model metrics"):
             m4.metric("Optimal threshold", f"{tp.get('optimal_threshold', 0.5):.3f}")
 
         if cv_metrics and cv_metrics.get("n_folds", 0) > 0:
+            cv_mean = cv_metrics.get("mean", 0)
+            cv_std = cv_metrics.get("std", 0)
+            # mean / std may be a scalar float or a dict keyed by metric name
+            if isinstance(cv_mean, dict):
+                cv_mean = cv_mean.get("roc_auc", 0)
+            if isinstance(cv_std, dict):
+                cv_std = cv_std.get("roc_auc", 0)
             st.caption(
                 f"CV ({cv_metrics['n_folds']} folds): "
-                f"AUC {cv_metrics.get('mean', {}).get('roc_auc', 0):.3f} "
-                f"± {cv_metrics.get('std', {}).get('roc_auc', 0):.3f}"
+                f"AUC {float(cv_mean):.3f} ± {float(cv_std):.3f}"
             )
 
         # Feature importance
@@ -88,12 +94,14 @@ with safe_page_section("Composite risk landscape"):
     score_cols = [c for c in scored.columns if c.endswith("_score")]
     if score_cols:
         scored["composite_risk"] = scored[score_cols].mean(axis=1)
+        # Plotly requires non-negative marker sizes; clip early deliveries to 0
+        scored["_lag_size"] = scored["max_delivery_lag_days"].clip(lower=0)
         fig_risk = px.scatter(
             scored.nlargest(2000, "composite_risk"),
             x="linked_email_count",
             y="document_count",
             color="composite_risk",
-            size="max_delivery_lag_days",
+            size="_lag_size",
             hover_data=["order_id", "customer_id_clean"],
             title="Composite risk landscape",
         )
