@@ -3,10 +3,10 @@
 PYTHON ?= python
 
 install:
-	$(PYTHON) -m pip install -e .
+	$(PYTHON) -m pip install -c constraints.txt -e .
 
 dev:
-	$(PYTHON) -m pip install -e ".[dev]"
+	$(PYTHON) -m pip install -c constraints-dev.txt -e ".[dev]"
 
 build:
 	$(PYTHON) -m archive_analytics build

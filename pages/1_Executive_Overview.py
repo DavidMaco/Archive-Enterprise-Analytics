@@ -8,16 +8,17 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from archive_analytics.dashboard import (
-    ensure_project_assets,
     get_risk_scores,
     get_table,
+    model_artifacts_ready,
+    require_dashboard_assets,
     safe_page_section,
 )
 
 st.set_page_config(page_title="Executive Overview", layout="wide", page_icon="📈")
 st.title("Executive Overview")
 
-ensure_project_assets(train_models=False)
+require_dashboard_assets()
 
 orders = get_table("fact_order")
 customers = get_table("dim_customer")
@@ -122,20 +123,23 @@ with safe_page_section("Order lifecycle Sankey"):
 # ------------------------------------------------------------------
 
 with safe_page_section("Top modeled risk orders"):
-    risk_scores = get_risk_scores()
-    merged = orders.merge(risk_scores, on=["order_id", "customer_id_clean", "order_created_at"], how="left")
-    score_cols = [c for c in merged.columns if c.endswith("_score")]
-    if score_cols:
-        merged["composite_risk"] = merged[score_cols].fillna(0).mean(axis=1)
-        fig_scatter = px.scatter(
-            merged.nlargest(1000, "composite_risk"),
-            x="linked_email_count",
-            y="max_delivery_lag_days",
-            color="composite_risk",
-            hover_data=["order_id", "customer_id_clean"],
-            title="Top modeled risk orders",
-        )
-        st.plotly_chart(fig_scatter, use_container_width=True)
+    if model_artifacts_ready():
+        risk_scores = get_risk_scores()
+        merged = orders.merge(risk_scores, on=["order_id", "customer_id_clean", "order_created_at"], how="left")
+        score_cols = [c for c in merged.columns if c.endswith("_score")]
+        if score_cols:
+            merged["composite_risk"] = merged[score_cols].fillna(0).mean(axis=1)
+            fig_scatter = px.scatter(
+                merged.nlargest(1000, "composite_risk"),
+                x="linked_email_count",
+                y="max_delivery_lag_days",
+                color="composite_risk",
+                hover_data=["order_id", "customer_id_clean"],
+                title="Top modeled risk orders",
+            )
+            st.plotly_chart(fig_scatter, use_container_width=True)
+        else:
+            st.info("Train models to see risk scores.")
     else:
         st.info("Train models to see risk scores.")
 

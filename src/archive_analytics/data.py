@@ -16,7 +16,7 @@ import hashlib
 import json
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pandas as pd
 
@@ -37,6 +37,22 @@ from .transforms import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def processed_assets_ready(config: AppConfig | None = None) -> bool:
+    """Return ``True`` when all processed assets are present on disk."""
+    cfg = config or get_config()
+    return all((cfg.processed_dir / fname).exists() for fname in PROCESSED_TABLES.values())
+
+
+def missing_processed_assets(config: AppConfig | None = None) -> list[str]:
+    """Return the logical names of processed assets that are currently missing."""
+    cfg = config or get_config()
+    return [
+        name
+        for name, fname in PROCESSED_TABLES.items()
+        if not (cfg.processed_dir / fname).exists()
+    ]
 
 
 # ── I/O helpers ─────────────────────────────────────────────────────────────
@@ -152,6 +168,7 @@ def build_processed_assets(
 def load_processed_table(
     name: str,
     config: AppConfig | None = None,
+    build_if_missing: bool = False,
 ) -> pd.DataFrame:
     """Load a processed parquet table by logical name.
 
@@ -163,15 +180,24 @@ def load_processed_table(
         If *name* is not a known parquet table.
     """
     cfg = config or get_config()
-    build_processed_assets(force=False, config=cfg)
     if name not in PROCESSED_TABLES or not PROCESSED_TABLES[name].endswith(".parquet"):
         raise KeyError(f"Unknown parquet table: {name}")
-    return pd.read_parquet(cfg.processed_dir / PROCESSED_TABLES[name])
+    path = cfg.processed_dir / PROCESSED_TABLES[name]
+    if not path.exists():
+        if build_if_missing:
+            build_processed_assets(force=False, config=cfg)
+        if not path.exists():
+            raise FileNotFoundError(
+                f"Processed table {name!r} is missing at {path}. "
+                "Run `python -m archive_analytics build` first."
+            )
+    return pd.read_parquet(path)
 
 
 def load_json_asset(
     name: str,
     config: AppConfig | None = None,
+    build_if_missing: bool = False,
 ) -> dict[str, Any]:
     """Load a processed JSON asset by logical name.
 
@@ -181,8 +207,15 @@ def load_json_asset(
         If *name* is not ``build_manifest`` or ``data_quality_report``.
     """
     cfg = config or get_config()
-    build_processed_assets(force=False, config=cfg)
     if name not in {"build_manifest", "data_quality_report"}:
         raise KeyError(f"Unknown JSON asset: {name}")
     path = cfg.processed_dir / PROCESSED_TABLES[name]
-    return json.loads(path.read_text(encoding="utf-8"))
+    if not path.exists():
+        if build_if_missing:
+            build_processed_assets(force=False, config=cfg)
+        if not path.exists():
+            raise FileNotFoundError(
+                f"JSON asset {name!r} is missing at {path}. "
+                "Run `python -m archive_analytics build` first."
+            )
+    return cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))

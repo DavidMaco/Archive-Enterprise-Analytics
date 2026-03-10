@@ -13,8 +13,18 @@ from typing import Any
 import pandas as pd
 import streamlit as st
 
-from .data import build_processed_assets, load_json_asset, load_processed_table
-from .modeling import load_model_metrics, load_risk_scores, train_all_targets
+from .data import (
+    build_processed_assets,
+    load_json_asset,
+    load_processed_table,
+    missing_processed_assets,
+)
+from .modeling import (
+    load_model_metrics,
+    load_risk_scores,
+    model_artifacts_ready,
+    train_all_targets,
+)
 from .settings import AppConfig, get_config
 
 logger = logging.getLogger(__name__)
@@ -72,6 +82,11 @@ def ensure_project_assets(
         Override the default ``AppConfig``.
     """
     cfg = config or get_config()
+    if not cfg.ui_mutations_enabled:
+        raise PermissionError(
+            "UI-triggered build and train actions are disabled. "
+            "Run the CLI commands instead."
+        )
     logger.info(
         "ensure_project_assets(train_models=%s, force=%s)", train_models, force_rebuild
     )
@@ -90,6 +105,34 @@ def metric_delta(current: float, baseline: float) -> str:
     if baseline == 0:
         return "n/a"
     return f"{((current - baseline) / baseline):.1%}"
+
+
+def require_dashboard_assets(
+    *,
+    require_models: bool = False,
+    config: AppConfig | None = None,
+) -> None:
+    """Stop the page with operator guidance when required assets are missing."""
+    cfg = config or get_config()
+    missing = missing_processed_assets(cfg)
+    if missing:
+        st.warning(
+            "Processed assets are not available. "
+            "Run `python -m archive_analytics build` before opening the dashboard."
+        )
+        st.caption("Missing assets: " + ", ".join(sorted(missing)))
+        if cfg.ui_mutations_enabled:
+            st.info("UI admin actions are enabled. Use the home page to build assets explicitly.")
+        st.stop()
+
+    if require_models and not model_artifacts_ready(cfg):
+        st.warning(
+            "Model artifacts are not available. "
+            "Run `python -m archive_analytics train` before opening this page."
+        )
+        if cfg.ui_mutations_enabled:
+            st.info("UI admin actions are enabled. Use the home page to train models explicitly.")
+        st.stop()
 
 
 def safe_page_section(title: str):

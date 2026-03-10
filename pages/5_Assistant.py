@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import streamlit as st
 
-from archive_analytics.dashboard import ensure_project_assets, get_table, safe_page_section
+from archive_analytics.dashboard import get_table, require_dashboard_assets, safe_page_section
 from archive_analytics.retrieval import summarise_evidence
 
 st.set_page_config(page_title="Assistant", layout="wide", page_icon="💬")
 st.title("Evidence-Based Assistant")
 
-ensure_project_assets(train_models=False)
+require_dashboard_assets()
 
 # ------------------------------------------------------------------
 # Filters

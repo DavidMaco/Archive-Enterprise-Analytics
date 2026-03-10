@@ -37,11 +37,8 @@ def vectorized_sha1(prefix: str, *columns: pd.Series) -> pd.Series:
 
 def normalize_id(series: pd.Series) -> pd.Series:
     """Strip whitespace and convert sentinel strings to ``pd.NA``."""
-    return (
-        series.astype("string")
-        .str.strip()
-        .replace({"<NA>": pd.NA, "nan": pd.NA, "None": pd.NA, "": pd.NA})
-    )
+    cleaned = series.astype("string").str.strip()
+    return cleaned.replace(["<NA>", "nan", "None", ""], pd.NA)
 
 
 # ---------------------------------------------------------------------------

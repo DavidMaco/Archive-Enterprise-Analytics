@@ -7,16 +7,16 @@ import plotly.express as px
 import streamlit as st
 
 from archive_analytics.dashboard import (
-    ensure_project_assets,
     get_json_asset,
     get_table,
+    require_dashboard_assets,
     safe_page_section,
 )
 
 st.set_page_config(page_title="Data Quality", layout="wide", page_icon="🧪")
 st.title("Data Quality")
 
-ensure_project_assets(train_models=False)
+require_dashboard_assets()
 
 # ------------------------------------------------------------------
 # Audit summary

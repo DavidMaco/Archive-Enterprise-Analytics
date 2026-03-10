@@ -31,7 +31,7 @@ from .constants import (
     SNIPPET_LENGTH,
     TFIDF_NGRAM_RANGE,
 )
-from .data import build_processed_assets, load_processed_table
+from .data import load_processed_table
 from .settings import AppConfig, get_config
 
 logger = logging.getLogger(__name__)
@@ -85,9 +85,8 @@ def invalidate_cache() -> None:
 
 
 def load_corpus(config: AppConfig | None = None) -> pd.DataFrame:
-    """Load the retrieval corpus, building processed assets if needed."""
+    """Load the retrieval corpus from processed assets."""
     cfg = config or get_config()
-    build_processed_assets(force=False, config=cfg)
     return load_processed_table("retrieval_corpus", config=cfg)
 
 

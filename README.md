@@ -53,7 +53,7 @@ tests/                   # Comprehensive pytest suite (35+ tests)
 # 1. Create a virtual environment and install
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
+python -m pip install -c constraints-dev.txt -e ".[dev]"
 
 # 2. Build processed data marts
 python -m archive_analytics build
@@ -106,6 +106,15 @@ ruff check src/ tests/
 # Type-check
 mypy src/archive_analytics/
 ```
+
+## Operational model
+
+- The dashboard is read-only by default. It does not build processed data or
+  train models on page load.
+- Build data explicitly with `python -m archive_analytics build`.
+- Train models explicitly with `python -m archive_analytics train`.
+- To enable the home page's admin buttons in a private environment, set
+  `ARCHIVE_ANALYTICS_ENABLE_UI_MUTATIONS=true`.
 
 ## Design notes
 

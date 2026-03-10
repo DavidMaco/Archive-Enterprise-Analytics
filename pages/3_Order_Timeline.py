@@ -7,16 +7,17 @@ import plotly.express as px
 import streamlit as st
 
 from archive_analytics.dashboard import (
-    ensure_project_assets,
     get_risk_scores,
     get_table,
+    model_artifacts_ready,
+    require_dashboard_assets,
     safe_page_section,
 )
 
 st.set_page_config(page_title="Order Timeline", layout="wide", page_icon="🗂️")
 st.title("Order Timeline")
 
-ensure_project_assets(train_models=False)  # never force model training from a page
+require_dashboard_assets()
 
 orders = get_table("fact_order")
 timeline = get_table("fact_event_timeline")
@@ -60,17 +61,20 @@ m4.metric("Credit flag", str(bool(selected_order["will_generate_credit_memo"])))
 # ------------------------------------------------------------------
 
 with safe_page_section(""):
-    risk_scores = get_risk_scores()
-    order_score = risk_scores[risk_scores["order_id"].astype("string") == str(order_id)]
-    if not order_score.empty:
-        s1, s2, s3 = st.columns(3)
-        for col, label, container in [
-            ("will_generate_complaint_score", "Complaint risk", s1),
-            ("will_be_delayed_score", "Delay risk", s2),
-            ("will_generate_credit_memo_score", "Credit risk", s3),
-        ]:
-            if col in order_score.columns:
-                container.metric(label, f"{float(order_score[col].iloc[0]):.1%}")
+    if model_artifacts_ready():
+        risk_scores = get_risk_scores()
+        order_score = risk_scores[risk_scores["order_id"].astype("string") == str(order_id)]
+        if not order_score.empty:
+            s1, s2, s3 = st.columns(3)
+            for col, label, container in [
+                ("will_generate_complaint_score", "Complaint risk", s1),
+                ("will_be_delayed_score", "Delay risk", s2),
+                ("will_generate_credit_memo_score", "Credit risk", s3),
+            ]:
+                if col in order_score.columns:
+                    container.metric(label, f"{float(order_score[col].iloc[0]):.1%}")
+    else:
+        st.info("Train models to see risk scores for this order.")
 
 # ------------------------------------------------------------------
 # Timeline scatter

@@ -18,7 +18,7 @@ import hashlib
 import json
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import joblib
 import numpy as np
@@ -59,6 +59,12 @@ from .data import build_processed_assets, load_processed_table
 from .settings import AppConfig, get_config
 
 logger = logging.getLogger(__name__)
+
+
+def model_artifacts_ready(config: AppConfig | None = None) -> bool:
+    """Return ``True`` when the metrics and score artefacts exist on disk."""
+    cfg = config or get_config()
+    return (cfg.models_dir / METRICS_FILE).exists() and (cfg.models_dir / SCORES_FILE).exists()
 
 
 # ── Frame preparation ───────────────────────────────────────────────────────
@@ -248,7 +254,11 @@ def _time_series_cv(
     mean_m = {}
     std_m = {}
     for k in keys:
-        vals = [m[k] for m in fold_metrics if m.get(k) is not None]
+        vals: list[float] = []
+        for metric in fold_metrics:
+            metric_value = metric.get(k)
+            if metric_value is not None:
+                vals.append(float(metric_value))
         mean_m[k] = float(np.mean(vals)) if vals else None
         std_m[k] = float(np.std(vals)) if vals else None
     return {"mean": mean_m, "std": std_m, "n_folds": len(fold_metrics)}
@@ -481,12 +491,15 @@ def _append_to_history(payload: dict[str, Any], cfg: AppConfig) -> None:
 # ── Load helpers ────────────────────────────────────────────────────────────
 
 def load_model_metrics(config: AppConfig | None = None) -> dict[str, Any]:
-    """Load model metrics, training on first call if artefacts are missing."""
+    """Load model metrics from disk."""
     cfg = config or get_config()
     path = cfg.models_dir / METRICS_FILE
     if not path.exists():
-        return train_all_targets(force=False, config=cfg)
-    payload = json.loads(path.read_text(encoding="utf-8"))
+        raise FileNotFoundError(
+            f"Model metrics are missing at {path}. "
+            "Run `python -m archive_analytics train` first."
+        )
+    payload = cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
     payload.setdefault("targets", {})
     for t in TARGETS:
         payload["targets"].setdefault(
@@ -500,7 +513,10 @@ def load_risk_scores(config: AppConfig | None = None) -> pd.DataFrame:
     cfg = config or get_config()
     path = cfg.models_dir / SCORES_FILE
     if not path.exists():
-        train_all_targets(force=False, config=cfg)
+        raise FileNotFoundError(
+            f"Risk scores are missing at {path}. "
+            "Run `python -m archive_analytics train` first."
+        )
     scores = pd.read_parquet(path)
     for t in TARGETS:
         if f"{t}_score" not in scores.columns:

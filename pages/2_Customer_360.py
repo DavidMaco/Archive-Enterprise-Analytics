@@ -6,12 +6,12 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from archive_analytics.dashboard import ensure_project_assets, get_table, safe_page_section
+from archive_analytics.dashboard import get_table, require_dashboard_assets, safe_page_section
 
 st.set_page_config(page_title="Customer 360", layout="wide", page_icon="🧭")
 st.title("Customer 360")
 
-ensure_project_assets(train_models=False)
+require_dashboard_assets()
 customers = get_table("dim_customer")
 orders = get_table("fact_order")
 timeline = get_table("fact_event_timeline")

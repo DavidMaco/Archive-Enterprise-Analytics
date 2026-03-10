@@ -28,6 +28,14 @@ _LOG_FORMAT = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
 _LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
+def _env_flag(name: str, default: bool = False) -> bool:
+    """Parse a boolean environment variable."""
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 def configure_logging(level: int | str = logging.INFO) -> None:
     """Set up structured logging for the entire package.
 
@@ -54,13 +62,7 @@ def _default_raw_dir() -> Path:
         return Path(env)
     # Fallback: look for a ``data/raw`` folder next to the project root
     candidate = PROJECT_ROOT / "data" / "raw"
-    if candidate.is_dir():
-        return candidate
-    # Last resort: original location (for backward-compat)
-    legacy = Path(r"C:\Users\HP EliteBook\OneDrive\Attachments\archive")
-    if legacy.is_dir():
-        return legacy
-    return candidate  # will fail gracefully later if absent
+    return candidate
 
 
 # ---------------------------------------------------------------------------
@@ -77,6 +79,9 @@ class AppConfig:
     processed_dir: Path = field(default_factory=lambda: PROJECT_ROOT / "data" / "processed")
     models_dir: Path = field(default_factory=lambda: PROJECT_ROOT / "data" / "models")
     reports_dir: Path = field(default_factory=lambda: PROJECT_ROOT / "reports")
+    ui_mutations_enabled: bool = field(
+        default_factory=lambda: _env_flag("ARCHIVE_ANALYTICS_ENABLE_UI_MUTATIONS")
+    )
 
     def ensure_directories(self) -> None:
         """Create output directories if they do not exist."""

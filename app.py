@@ -12,6 +12,8 @@ from archive_analytics.dashboard import (
     ensure_project_assets,
     get_json_asset,
     get_model_metrics_cached,
+    model_artifacts_ready,
+    processed_assets_ready,
     safe_page_section,
 )
 from archive_analytics.settings import configure_logging, get_config
@@ -29,19 +31,23 @@ config = get_config()
 # Data build / model train controls
 # ------------------------------------------------------------------
 
-left, right = st.columns([1, 1])
-with left:
-    if st.button("Build cleaned marts", use_container_width=True):
-        ensure_project_assets(train_models=False, force_rebuild=True, config=config)
-        st.cache_data.clear()
-        st.success("Cleaned marts rebuilt.")
-with right:
-    if st.button("Train risk models", use_container_width=True):
-        ensure_project_assets(train_models=True, force_rebuild=True, config=config)
-        st.cache_data.clear()
-        st.success("Models retrained.")
-
-ensure_project_assets(train_models=False, force_rebuild=False, config=config)
+if config.ui_mutations_enabled:
+    left, right = st.columns([1, 1])
+    with left:
+        if st.button("Build cleaned marts", use_container_width=True):
+            ensure_project_assets(train_models=False, force_rebuild=True, config=config)
+            st.cache_data.clear()
+            st.success("Cleaned marts rebuilt.")
+    with right:
+        if st.button("Train risk models", use_container_width=True):
+            ensure_project_assets(train_models=True, force_rebuild=True, config=config)
+            st.cache_data.clear()
+            st.success("Models retrained.")
+else:
+    st.info(
+        "UI-triggered build and training actions are disabled. "
+        "Use `python -m archive_analytics build` and `python -m archive_analytics train`."
+    )
 
 # ------------------------------------------------------------------
 # Overview
@@ -63,20 +69,28 @@ st.markdown(
 # ------------------------------------------------------------------
 
 with safe_page_section("Data quality snapshot"):
-    quality = get_json_asset("data_quality_report")
-    kpi1, kpi2, kpi3 = st.columns(3)
-    kpi1.metric("Raw data directory", str(config.raw_data_dir))
-    kpi2.metric("Processed tables", len(quality.get("processed_counts", {})))
-    kpi3.metric("Known email ID duplicates", f"{quality.get('email_duplicate_source_ids', 0):,}")
-    st.json(quality)
+    if processed_assets_ready(config):
+        quality = get_json_asset("data_quality_report")
+        kpi1, kpi2, kpi3 = st.columns(3)
+        kpi1.metric("Raw data directory", str(config.raw_data_dir))
+        kpi2.metric("Processed tables", len(quality.get("processed_counts", {})))
+        kpi3.metric("Known email ID duplicates", f"{quality.get('email_duplicate_source_ids', 0):,}")
+        st.json(quality)
+    else:
+        st.info("Processed assets are not built yet. Run `python -m archive_analytics build`.")
 
 # ------------------------------------------------------------------
 # Model status
 # ------------------------------------------------------------------
 
 with safe_page_section("Model status"):
-    metrics = get_model_metrics_cached()
-    st.json(metrics)
+    if model_artifacts_ready(config):
+        metrics = get_model_metrics_cached()
+        st.json(metrics)
+    elif processed_assets_ready(config):
+        st.info("Models are not trained yet. Run `python -m archive_analytics train`.")
+    else:
+        st.info("Build processed assets before training models.")
 
 # ------------------------------------------------------------------
 # Navigation guide

@@ -147,8 +147,13 @@ def build_document_fact(
         if ts_col in support.columns:
             mask = support["document_type"] == dtype
             support.loc[mask, "event_timestamp"] = support.loc[mask, ts_col]
+    fallback_order_date = (
+        support["order_date"]
+        if "order_date" in support.columns
+        else pd.Series(pd.NaT, index=support.index)
+    )
     support["event_timestamp"] = support["event_timestamp"].fillna(
-        support.get("order_date", pd.NaT)
+        fallback_order_date
     )
     support["event_date"] = support["event_timestamp"].dt.date.astype("string")
 

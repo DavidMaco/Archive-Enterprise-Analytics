@@ -22,7 +22,20 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pip install -e ".[dev]"
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -c constraints-dev.txt -e ".[dev]"
+
+      - name: Lint
+        run: python -m ruff check .
+
+      - name: Type-check
+        run: python -m mypy src/archive_analytics
 
       - name: Run tests
-        run: pytest tests/ -v --tb=short
+        run: python -m pytest tests/ -v --tb=short
+
+      - name: Package smoke test
+        run: |
+          python -c "import archive_analytics"
+          python -m archive_analytics --help

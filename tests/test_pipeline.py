@@ -552,6 +552,27 @@ class TestDataGuards:
         ):
             load_json_asset("../../etc/shadow")
 
+    def test_missing_processed_table_requires_explicit_build(self) -> None:
+        from archive_analytics.data import load_processed_table
+        from archive_analytics.settings import AppConfig
+
+        tmp = Path(tempfile.mkdtemp())
+        try:
+            cfg = AppConfig(
+                project_root=tmp,
+                raw_data_dir=tmp / "raw",
+                processed_dir=tmp / "processed",
+                models_dir=tmp / "models",
+                reports_dir=tmp / "reports",
+            )
+            cfg.ensure_directories()
+            with pytest.raises(FileNotFoundError, match="archive_analytics build"):
+                load_processed_table("fact_order", config=cfg)
+        finally:
+            import shutil
+
+            shutil.rmtree(tmp, ignore_errors=True)
+
 
 # ======================================================================
 # 9. retrieval — cached TF-IDF and dedup
@@ -669,6 +690,26 @@ class TestDashboardHelpers:
 
         assert metric_delta(90, 100) == "-10.0%"
 
+    def test_model_artifacts_ready_false_when_missing(self) -> None:
+        from archive_analytics.modeling import model_artifacts_ready
+        from archive_analytics.settings import AppConfig
+
+        tmp = Path(tempfile.mkdtemp())
+        try:
+            cfg = AppConfig(
+                project_root=tmp,
+                raw_data_dir=tmp / "raw",
+                processed_dir=tmp / "processed",
+                models_dir=tmp / "models",
+                reports_dir=tmp / "reports",
+            )
+            cfg.ensure_directories()
+            assert model_artifacts_ready(cfg) is False
+        finally:
+            import shutil
+
+            shutil.rmtree(tmp, ignore_errors=True)
+
 
 # ======================================================================
 # 12. settings
@@ -724,3 +765,9 @@ class TestSettings:
 
         configure_logging()
         configure_logging()  # should not add duplicate handlers
+
+    def test_ui_mutations_disabled_by_default(self) -> None:
+        from archive_analytics.settings import AppConfig
+
+        cfg = AppConfig()
+        assert cfg.ui_mutations_enabled is False
