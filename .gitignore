@@ -28,5 +28,8 @@ reports/
 Thumbs.db
 .DS_Store
 
+# Streamlit secrets (never commit real secrets)
+.streamlit/secrets.toml
+
 # Environment
 .env

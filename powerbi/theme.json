@@ -1,0 +1,42 @@
+{
+  "name": "Archive Enterprise Analytics",
+  "dataColors": [
+    "#4F8BF9",
+    "#F28E2B",
+    "#E15759",
+    "#76B7B2",
+    "#59A14F",
+    "#EDC948",
+    "#B07AA1",
+    "#FF9DA7",
+    "#9C755F",
+    "#BAB0AC"
+  ],
+  "background": "#0E1117",
+  "foreground": "#FAFAFA",
+  "tableAccent": "#4F8BF9",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [{ "color": { "solid": { "color": "#1C2433" } } }],
+        "border": [{ "show": false }]
+      }
+    },
+    "card": {
+      "*": {
+        "labels": [
+          {
+            "color": { "solid": { "color": "#4F8BF9" } },
+            "fontSize": 28
+          }
+        ],
+        "categoryLabels": [
+          {
+            "color": { "solid": { "color": "#FAFAFA" } },
+            "fontSize": 11
+          }
+        ]
+      }
+    }
+  }
+}
