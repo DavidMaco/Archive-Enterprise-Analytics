@@ -104,18 +104,44 @@ with safe_page_section("Order lifecycle Sankey"):
     n_credit = int(orders["will_generate_credit_memo"].sum())
     n_clean = max(n_total - n_delayed - n_complaint, 0)
 
+    # Node index: 0=All orders, 1=With docs, 2=With emails, 3=Delayed,
+    #             4=Complaint,  5=Credit memo, 6=No issue
     labels = ["All orders", "With docs", "With emails", "Delayed", "Complaint", "Credit memo", "No issue"]
+    node_colors = [
+        "#4F8BF9",  # 0 All orders    – blue
+        "#4F8BF9",  # 1 With docs     – blue
+        "#F9A84F",  # 2 With emails   – amber
+        "#E05C5C",  # 3 Delayed       – red
+        "#E05C5C",  # 4 Complaint     – red
+        "#50C878",  # 5 Credit memo   – green
+        "#6BCB77",  # 6 No issue      – light green
+    ]
+    link_colors = [
+        "rgba(79,139,249,0.35)",   # 0→1 All → With docs
+        "rgba(249,168,79,0.35)",   # 0→2 All → With emails
+        "rgba(224,92,92,0.45)",    # 0→3 All → Delayed
+        "rgba(107,203,119,0.35)",  # 0→6 All → No issue
+        "rgba(80,200,120,0.45)",   # 3→5 Delayed → Credit memo
+        "rgba(80,200,120,0.45)",   # 4→5 Complaint → Credit memo
+    ]
     fig_sankey = go.Figure(
         go.Sankey(
-            node=dict(label=labels, pad=15, thickness=20),
+            node=dict(
+                label=labels,
+                color=node_colors,
+                pad=15,
+                thickness=20,
+                line=dict(color="rgba(255,255,255,0.15)", width=0.5),
+            ),
             link=dict(
                 source=[0, 0, 0, 0, 3, 4],
                 target=[1, 2, 3, 6, 5, 5],
                 value=[n_with_docs, n_with_email, n_delayed, n_clean, n_credit, n_credit],
+                color=link_colors,
             ),
         )
     )
-    fig_sankey.update_layout(title_text="Order lifecycle (data-driven)")
+    fig_sankey.update_layout(title_text="Order lifecycle (data-driven)", font_color="#E0E0E0")
     st.plotly_chart(fig_sankey, use_container_width=True)
 
 # ------------------------------------------------------------------
