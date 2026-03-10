@@ -1,0 +1,15 @@
+{
+  "raw_data_dir": "C:\\Users\\HP EliteBook\\OneDrive\\Documents\\VSCode Projects\\archive-enterprise-analytics\\data\\raw",
+  "processed_dir": "C:\\Users\\HP EliteBook\\OneDrive\\Documents\\VSCode Projects\\archive-enterprise-analytics\\data\\processed",
+  "raw_data_fingerprint": "5c79cd89b6d918b7eb848514193194a8ba902a9644325b2787cf5e89b4918afd",
+  "tables": {
+    "fact_email": "C:\\Users\\HP EliteBook\\OneDrive\\Documents\\VSCode Projects\\archive-enterprise-analytics\\data\\processed\\fact_email.parquet",
+    "fact_document": "C:\\Users\\HP EliteBook\\OneDrive\\Documents\\VSCode Projects\\archive-enterprise-analytics\\data\\processed\\fact_document.parquet",
+    "fact_order": "C:\\Users\\HP EliteBook\\OneDrive\\Documents\\VSCode Projects\\archive-enterprise-analytics\\data\\processed\\fact_order.parquet",
+    "dim_customer": "C:\\Users\\HP EliteBook\\OneDrive\\Documents\\VSCode Projects\\archive-enterprise-analytics\\data\\processed\\dim_customer.parquet",
+    "fact_event_timeline": "C:\\Users\\HP EliteBook\\OneDrive\\Documents\\VSCode Projects\\archive-enterprise-analytics\\data\\processed\\fact_event_timeline.parquet",
+    "fact_customer_daily": "C:\\Users\\HP EliteBook\\OneDrive\\Documents\\VSCode Projects\\archive-enterprise-analytics\\data\\processed\\fact_customer_daily.parquet",
+    "fact_order_risk_features": "C:\\Users\\HP EliteBook\\OneDrive\\Documents\\VSCode Projects\\archive-enterprise-analytics\\data\\processed\\fact_order_risk_features.parquet",
+    "retrieval_corpus": "C:\\Users\\HP EliteBook\\OneDrive\\Documents\\VSCode Projects\\archive-enterprise-analytics\\data\\processed\\retrieval_corpus.parquet"
+  }
+}

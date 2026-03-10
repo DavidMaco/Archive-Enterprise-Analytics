@@ -1,0 +1,43 @@
+{
+  "raw_counts": {
+    "communications": 380,
+    "erp_transactions": 1188,
+    "sales_documents": 0,
+    "sales_items": 0,
+    "supporting_documents": 480,
+    "business_documents": 60,
+    "sqlite_emails": 0,
+    "sqlite_contacts": 0
+  },
+  "processed_counts": {
+    "fact_email": 380,
+    "fact_document": 540,
+    "fact_order": 300,
+    "dim_customer": 26,
+    "fact_event_timeline": 1220,
+    "fact_customer_daily": 1206,
+    "fact_order_risk_features": 300,
+    "retrieval_corpus": 1022
+  },
+  "email_duplicate_source_ids": 0,
+  "document_duplicate_source_ids": 0,
+  "null_customer_ids_in_email_pct": 6.32,
+  "email_date_range": [
+    "2022-01-09 00:50:49",
+    "2024-06-22 00:34:21"
+  ],
+  "order_date_range": [
+    "2022-01-01 00:00:00",
+    "2024-06-27 00:00:00"
+  ],
+  "document_date_range": [
+    "2022-01-02 00:00:00",
+    "2024-07-19 00:00:00"
+  ],
+  "sqlite_vs_parquet_email_gap": 380,
+  "notes": [
+    "Raw documentation differs from the actual files; the build trusts actual file contents.",
+    "Canonical IDs are deterministic hashes added alongside original IDs.",
+    "Communications with null customer IDs are retained as internal or unlinked events."
+  ]
+}

@@ -19,9 +19,10 @@ ENV/
 *.swp
 *.swo
 
-# Project artifacts (generated data & models)
-data/processed/
-data/models/
+# Project artifacts – raw source data is gitignored; processed/model
+# artefacts are committed so Streamlit Cloud can load the dashboard.
+# To regenerate from scratch run:  python scripts/seed_demo.py
+data/raw/
 reports/
 
 # OS
