@@ -28,7 +28,7 @@ def vectorized_sha1(prefix: str, *columns: pd.Series) -> pd.Series:
     combined = pd.Series(prefix, index=columns[0].index)
     for col in columns:
         combined = combined + "||" + col.fillna("").astype(str)
-    return combined.apply(lambda s: hashlib.sha1(s.encode("utf-8")).hexdigest()[:16])
+    return combined.apply(lambda s: hashlib.sha1(s.encode("utf-8")).hexdigest()[:16])  # type: ignore[return-value]
 
 
 # ---------------------------------------------------------------------------

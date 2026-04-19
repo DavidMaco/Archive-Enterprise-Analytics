@@ -68,9 +68,9 @@ def _get_or_build_index(
         min_df=1,
         max_features=30_000,
     )
-    matrix = vectorizer.fit_transform(corpus["text"].fillna(""))
-    _INDEX_CACHE[fp] = (vectorizer, matrix, corpus)
-    return vectorizer, matrix, corpus
+    matrix = vectorizer.fit_transform(corpus["text"].fillna(""))  # type: ignore[assignment]
+    _INDEX_CACHE[fp] = (vectorizer, matrix, corpus)  # type: ignore[assignment]
+    return vectorizer, matrix, corpus  # type: ignore[return-value]
 
 
 def invalidate_cache() -> None:

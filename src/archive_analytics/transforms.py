@@ -158,9 +158,9 @@ def build_document_fact(
     support["event_date"] = support["event_timestamp"].dt.date.astype("string")
 
     # Separate financial columns (fixes the old meaningless sum)
-    support["revenue_amount"] = support.get("billed_amount", pd.Series(0.0, index=support.index)).fillna(0)
-    support["cost_amount"] = support.get("total_amount", pd.Series(0.0, index=support.index)).fillna(0)
-    support["refund_amount"] = support.get("credit_amount", pd.Series(0.0, index=support.index)).fillna(0)
+    support["revenue_amount"] = support.get("billed_amount", pd.Series(0.0, index=support.index)).fillna(0)  # type: ignore[union-attr]
+    support["cost_amount"] = support.get("total_amount", pd.Series(0.0, index=support.index)).fillna(0)  # type: ignore[union-attr]
+    support["refund_amount"] = support.get("credit_amount", pd.Series(0.0, index=support.index)).fillna(0)  # type: ignore[union-attr]
 
     if "actual_delivery" in support.columns and "expected_delivery" in support.columns:
         support["delivery_lag_days"] = (
@@ -174,7 +174,7 @@ def build_document_fact(
         + " for order "
         + support["order_id"].fillna("unknown")
         + ", customer "
-        + support.get("customer_name", pd.Series("unknown", index=support.index)).fillna("unknown")
+        + support.get("customer_name", pd.Series("unknown", index=support.index)).fillna("unknown")  # type: ignore[union-attr]
     )
 
     # ── Business documents ──

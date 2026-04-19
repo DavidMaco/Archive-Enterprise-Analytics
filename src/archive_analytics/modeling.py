@@ -107,7 +107,7 @@ def _train_test_split_by_time(
     if train.empty or test.empty:
         idx = max(1, int(len(frame) * TRAIN_TEST_TIME_QUANTILE))
         train, test = frame.iloc[:idx].copy(), frame.iloc[idx:].copy()
-    return train, test
+    return train, test  # type: ignore[return-value]
 
 
 # ── Preprocessor ────────────────────────────────────────────────────────────

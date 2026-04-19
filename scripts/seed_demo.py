@@ -59,8 +59,8 @@ N_EMAILS = 380
 N_SUPPORT_DOCS = 480
 N_BIZ_DOCS = 60
 
-BASE_DATE = pd.Timestamp("2022-01-01")
-END_DATE = pd.Timestamp("2024-06-30")
+BASE_DATE: pd.Timestamp = pd.Timestamp("2022-01-01")  # type: ignore[assignment]
+END_DATE: pd.Timestamp = pd.Timestamp("2024-06-30")  # type: ignore[assignment]
 DAYS = int((END_DATE - BASE_DATE).days)
 
 PLANTS = ["PL01", "PL02", "PL03", "PL04", "PL05"]
@@ -326,10 +326,10 @@ print(f"  Business documents: {len(biz_df):,} rows")
 
 print("Generating stub files …")
 
-pd.DataFrame(columns=["id", "document_number", "status"]).to_parquet(
+pd.DataFrame(columns=["id", "document_number", "status"]).to_parquet(  # type: ignore[call-overload]
     RAW_DIR / "sales_documents.parquet", index=False
 )
-pd.DataFrame(columns=["id", "document_number", "item", "quantity"]).to_parquet(
+pd.DataFrame(columns=["id", "document_number", "item", "quantity"]).to_parquet(  # type: ignore[call-overload]
     RAW_DIR / "sales_items.parquet", index=False
 )
 
